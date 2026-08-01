@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 15px;
+  --background: #F1F4F8;
+  --foreground: #0A1F44;
+  --card: #ffffff;
+  --card-foreground: #0A1F44;
+  --popover: #ffffff;
+  --popover-foreground: #0A1F44;
+  --primary: #0A1F44;
+  --primary-foreground: #ffffff;
+  --secondary: #E2E8F0;
+  --secondary-foreground: #0A1F44;
+  --muted: #E2E8F0;
+  --muted-foreground: #64748B;
+  --accent: #0891B2;
+  --accent-foreground: #ffffff;
+  --destructive: #DC2626;
+  --destructive-foreground: #ffffff;
+  --border: rgba(10, 31, 68, 0.1);
+  --input: transparent;
+  --input-background: #F8FAFC;
+  --ring: #0891B2;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+}
