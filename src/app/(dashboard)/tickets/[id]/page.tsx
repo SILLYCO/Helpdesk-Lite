@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Calendar,
   ChevronDown,
+  History,
   MessageSquare,
   Send,
   Tag,
@@ -14,6 +15,7 @@ import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
+import { AuditLogTimeline } from "@/components/tickets/AuditLogTimeline"
 import { PriorityLabel } from "@/components/tickets/PriorityLabel"
 import { StatusBadge } from "@/components/tickets/StatusBadge"
 import { STATUS_OPTIONS } from "@/lib/constants"
@@ -35,6 +37,7 @@ export default function TicketDetailPage() {
 
   const ticket = tickets.find((t) => t.id === ticketId)
   const [newStatus, setNewStatus] = useState<TicketStatus | null>(null)
+  const [activeTab, setActiveTab] = useState<"discussion" | "audit">("discussion")
 
   const {
     register,
@@ -85,12 +88,12 @@ export default function TicketDetailPage() {
 
   const handleSaveStatus = () => {
     if (newStatus !== ticket.status) {
-      updateStatus(ticket.id, newStatus)
+      updateStatus(ticket.id, newStatus, user)
     }
   }
 
   const handleAssignToMe = () => {
-    assignTicket(ticket.id, user.name)
+    assignTicket(ticket.id, user.name, user)
     setNewStatus("In Progress")
   }
 
@@ -218,59 +221,95 @@ export default function TicketDetailPage() {
           </div>
 
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-7 py-6">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4 flex items-center gap-1.5">
-              <MessageSquare size={12} aria-hidden="true" />
-              Activity ({ticket.comments.length})
-            </h3>
+            {/* Tabs for Activity vs Audit Log */}
+            <div className="flex items-center gap-6 border-b border-slate-100 pb-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setActiveTab("discussion")}
+                className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
+                  activeTab === "discussion"
+                    ? "text-[#0891B2]"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                <MessageSquare size={13} aria-hidden="true" />
+                Discussion ({ticket.comments.length})
+                {activeTab === "discussion" && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] rounded-full" />
+                )}
+              </button>
 
-            {ticket.comments.length > 0 ? (
-              <div className="flex flex-col gap-5 mb-5">
-                {ticket.comments.map((c) => (
-                  <div key={c.id} className="flex gap-3">
-                    <div className="w-7 h-7 bg-[#0A1F44]/10 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                      <User size={13} className="text-[#0A1F44]" aria-hidden="true" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-baseline gap-2 mb-1">
-                        <span className="text-sm font-semibold text-[#0A1F44]">
-                          {c.author}
-                        </span>
-                        <span className="text-xs text-slate-400">{c.role}</span>
-                        <span className="text-xs text-slate-400 ml-auto">
-                          {c.timestamp}
-                        </span>
+              <button
+                type="button"
+                onClick={() => setActiveTab("audit")}
+                className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
+                  activeTab === "audit"
+                    ? "text-[#0891B2]"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                <History size={13} aria-hidden="true" />
+                Audit Log ({ticket.history?.length || 0})
+                {activeTab === "audit" && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] rounded-full" />
+                )}
+              </button>
+            </div>
+
+            {activeTab === "discussion" ? (
+              <>
+                {ticket.comments.length > 0 ? (
+                  <div className="flex flex-col gap-5 mb-5">
+                    {ticket.comments.map((c) => (
+                      <div key={c.id} className="flex gap-3">
+                        <div className="w-7 h-7 bg-[#0A1F44]/10 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                          <User size={13} className="text-[#0A1F44]" aria-hidden="true" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-baseline gap-2 mb-1">
+                            <span className="text-sm font-semibold text-[#0A1F44]">
+                              {c.author}
+                            </span>
+                            <span className="text-xs text-slate-400">{c.role}</span>
+                            <span className="text-xs text-slate-400 ml-auto">
+                              {c.timestamp}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-700 leading-relaxed">{c.body}</p>
+                        </div>
                       </div>
-                      <p className="text-sm text-slate-700 leading-relaxed">{c.body}</p>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-slate-400 mb-5 italic">No activity yet.</p>
-            )}
+                ) : (
+                  <p className="text-sm text-slate-400 mb-5 italic">No comments yet.</p>
+                )}
 
-            <form
-              onSubmit={handleSubmit(handleAddComment)}
-              className="flex flex-col gap-2.5 pt-4 border-t border-slate-100"
-            >
-              <textarea
-                rows={3}
-                placeholder="Add an update or response…"
-                aria-label="Comment body"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
-                {...register("body")}
-              />
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={!commentBody?.trim() || isSubmitting}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-[#0891B2] hover:bg-[#0780A0] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                <form
+                  onSubmit={handleSubmit(handleAddComment)}
+                  className="flex flex-col gap-2.5 pt-4 border-t border-slate-100"
                 >
-                  <Send size={13} aria-hidden="true" />
-                  Post Update
-                </button>
-              </div>
-            </form>
+                  <textarea
+                    rows={3}
+                    placeholder="Add an update or response…"
+                    aria-label="Comment body"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
+                    {...register("body")}
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={!commentBody?.trim() || isSubmitting}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-[#0891B2] hover:bg-[#0780A0] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Send size={13} aria-hidden="true" />
+                      Post Update
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <AuditLogTimeline history={ticket.history || []} />
+            )}
           </div>
         </div>
 
@@ -301,3 +340,4 @@ export default function TicketDetailPage() {
     </div>
   )
 }
+
