@@ -100,12 +100,12 @@ export default function SubmitTicketPage() {
         subtitle="Describe your issue and we'll get back to you shortly."
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-7 py-7">
+      <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-7 transition-colors">
         <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col gap-5" noValidate>
           <div>
             <label
               htmlFor="title"
-              className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5"
+              className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5"
             >
               Ticket Title <span className="text-red-500">*</span>
             </label>
@@ -114,7 +114,7 @@ export default function SubmitTicketPage() {
               type="text"
               placeholder="Brief summary of your issue"
               aria-invalid={!!errors.title}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all"
               {...register("title")}
             />
             {errors.title && (
@@ -125,7 +125,7 @@ export default function SubmitTicketPage() {
           <div>
             <label
               htmlFor="description"
-              className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5"
+              className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5"
             >
               Description <span className="text-red-500">*</span>
             </label>
@@ -134,7 +134,7 @@ export default function SubmitTicketPage() {
               rows={5}
               placeholder="Describe the problem in detail. Include any error messages, steps to reproduce, and how it affects your work."
               aria-invalid={!!errors.description}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
               {...register("description")}
             />
             {errors.description && (
@@ -146,7 +146,7 @@ export default function SubmitTicketPage() {
             <div>
               <label
                 htmlFor="category"
-                className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5"
+                className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5"
               >
                 Category <span className="text-red-500">*</span>
               </label>
@@ -154,7 +154,7 @@ export default function SubmitTicketPage() {
                 <select
                   id="category"
                   aria-invalid={!!errors.category}
-                  className="w-full appearance-none px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all pr-8"
+                  className="w-full appearance-none px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all pr-8"
                   {...register("category")}
                 >
                   <option value="">Select…</option>
@@ -166,7 +166,7 @@ export default function SubmitTicketPage() {
                 </select>
                 <ChevronDown
                   size={14}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none"
                   aria-hidden="true"
                 />
               </div>
@@ -178,14 +178,14 @@ export default function SubmitTicketPage() {
             <div>
               <label
                 htmlFor="priority"
-                className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5"
+                className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5"
               >
                 Priority
               </label>
               <div className="relative">
                 <select
                   id="priority"
-                  className="w-full appearance-none px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all pr-8"
+                  className="w-full appearance-none px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all pr-8"
                   {...register("priority")}
                 >
                   {PRIORITIES.map((p) => (
@@ -196,7 +196,7 @@ export default function SubmitTicketPage() {
                 </select>
                 <ChevronDown
                   size={14}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none"
                   aria-hidden="true"
                 />
               </div>
@@ -204,13 +204,13 @@ export default function SubmitTicketPage() {
           </div>
 
           <div className="pt-2 flex items-center justify-between">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-400 dark:text-slate-500">
               Fields marked <span className="text-red-500">*</span> are required
             </p>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 bg-[#0A1F44] hover:bg-[#112952] text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-60"
+              className="px-6 py-2.5 bg-[#0A1F44] dark:bg-[#0891B2] hover:bg-[#112952] dark:hover:bg-[#0780A0] text-white rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 disabled:opacity-60"
             >
               <Send size={14} aria-hidden="true" />
               Submit Ticket

@@ -74,29 +74,29 @@ const ManagerOverviewContent = () => {
     {
       label: "Open",
       value: stats.open,
-      color: "bg-blue-50 border-blue-200",
-      textColor: "text-blue-700",
+      color: "bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/60",
+      textColor: "text-blue-700 dark:text-blue-400",
       icon: AlertCircle,
     },
     {
       label: "In Progress",
       value: stats.inProgress,
-      color: "bg-amber-50 border-amber-200",
-      textColor: "text-amber-700",
+      color: "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60",
+      textColor: "text-amber-700 dark:text-amber-400",
       icon: Clock,
     },
     {
       label: "Resolved",
       value: stats.resolved,
-      color: "bg-emerald-50 border-emerald-200",
-      textColor: "text-emerald-700",
+      color: "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60",
+      textColor: "text-emerald-700 dark:text-emerald-400",
       icon: CheckCircle2,
     },
     {
       label: "Overdue",
       value: stats.overdue,
-      color: "bg-red-50 border-red-200",
-      textColor: "text-red-700",
+      color: "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800/60",
+      textColor: "text-red-700 dark:text-red-400",
       icon: AlertCircle,
     },
   ]
@@ -112,10 +112,10 @@ const ManagerOverviewContent = () => {
         {summaryCards.map(({ label, value, color, textColor, icon: Icon }) => (
           <div
             key={label}
-            className={`bg-white rounded-xl border shadow-sm px-5 py-5 ${color}`}
+            className={`rounded-xl border shadow-sm px-5 py-5 transition-colors ${color}`}
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 {label}
               </p>
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${color}`}>
@@ -123,19 +123,19 @@ const ManagerOverviewContent = () => {
               </div>
             </div>
             <p className={`text-3xl font-bold ${textColor}`}>{value}</p>
-            <p className="text-xs text-slate-400 mt-1">active tickets</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">active tickets</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-[1fr_280px] gap-5 mb-6">
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 py-5">
-          <h3 className="text-sm font-semibold text-[#0A1F44] mb-4">
+        <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-6 py-5 transition-colors">
+          <h3 className="text-sm font-semibold text-[#0A1F44] dark:text-slate-100 mb-4">
             Tickets by Category
           </h3>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={barData} barSize={22} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F4F8" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#94A3B820" vertical={false} />
               <XAxis
                 dataKey="category"
                 tick={{ fontSize: 11, fill: "#94A3B8" }}
@@ -151,8 +151,10 @@ const ManagerOverviewContent = () => {
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: "1px solid #E2E8F0",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  border: "1px solid #334155",
+                  backgroundColor: "#0F1930",
+                  color: "#F8FAFC",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                 }}
               />
               <Bar dataKey="open" name="Open" fill="#0891B2" radius={[4, 4, 0, 0]} />
@@ -161,8 +163,8 @@ const ManagerOverviewContent = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-6 py-5">
-          <h3 className="text-sm font-semibold text-[#0A1F44] mb-4">
+        <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-6 py-5 transition-colors">
+          <h3 className="text-sm font-semibold text-[#0A1F44] dark:text-slate-100 mb-4">
             Status Distribution
           </h3>
           <ResponsiveContainer width="100%" height={180}>
@@ -187,14 +189,16 @@ const ManagerOverviewContent = () => {
                 iconType="circle"
                 iconSize={8}
                 formatter={(value) => (
-                  <span style={{ fontSize: 11, color: "#64748B" }}>{value}</span>
+                  <span style={{ fontSize: 11, color: "#94A3B8" }}>{value}</span>
                 )}
               />
               <Tooltip
                 contentStyle={{
                   fontSize: 12,
                   borderRadius: 8,
-                  border: "1px solid #E2E8F0",
+                  border: "1px solid #334155",
+                  backgroundColor: "#0F1930",
+                  color: "#F8FAFC",
                 }}
               />
             </PieChart>
@@ -202,30 +206,30 @@ const ManagerOverviewContent = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-[#0A1F44]">All Tickets</h3>
-          <span className="text-xs text-slate-400">{tickets.length} total</span>
+      <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
+        <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-[#0A1F44] dark:text-slate-100">All Tickets</h3>
+          <span className="text-xs text-slate-400 dark:text-slate-500">{tickets.length} total</span>
         </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50">
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-24">
+            <tr className="border-b border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-[#0F1930]">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-24">
                 ID
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Title
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-32">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-32">
                 Submitted by
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-36">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-36">
                 Assigned to
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-32">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-32">
                 Status
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-24">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-24">
                 Date
               </th>
             </tr>
@@ -244,30 +248,30 @@ const ManagerOverviewContent = () => {
                 tabIndex={0}
                 role="button"
                 aria-label={`View ticket ${ticket.id}`}
-                className={`cursor-pointer hover:bg-slate-50 transition-colors focus:outline-none focus:bg-slate-50 ${
-                  i < tickets.length - 1 ? "border-b border-slate-100" : ""
+                className={`cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors focus:outline-none focus:bg-slate-50 dark:focus:bg-slate-800/50 ${
+                  i < tickets.length - 1 ? "border-b border-slate-100 dark:border-slate-800/60" : ""
                 }`}
               >
                 <td className="px-5 py-3.5">
-                  <span className="font-mono text-xs text-slate-500">{ticket.id}</span>
+                  <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{ticket.id}</span>
                 </td>
                 <td className="px-5 py-3.5">
-                  <span className="font-medium text-[#0A1F44]">{ticket.title}</span>
+                  <span className="font-medium text-[#0A1F44] dark:text-slate-100">{ticket.title}</span>
                 </td>
-                <td className="px-5 py-3.5 text-xs text-slate-600">
+                <td className="px-5 py-3.5 text-xs text-slate-600 dark:text-slate-300">
                   {ticket.submittedBy}
                 </td>
                 <td className="px-5 py-3.5">
                   {ticket.assignedTo ? (
-                    <span className="text-xs text-slate-600">{ticket.assignedTo}</span>
+                    <span className="text-xs text-slate-600 dark:text-slate-300">{ticket.assignedTo}</span>
                   ) : (
-                    <span className="text-xs text-slate-400 italic">Unassigned</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 italic">Unassigned</span>
                   )}
                 </td>
                 <td className="px-5 py-3.5">
                   <StatusBadge status={ticket.status} />
                 </td>
-                <td className="px-5 py-3.5 text-xs text-slate-500">
+                <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">
                   {formatDate(ticket.submittedDate)}
                 </td>
               </tr>

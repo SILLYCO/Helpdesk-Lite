@@ -13,6 +13,7 @@ import {
 import type { Role } from "@/types"
 import { ROLE_LABELS } from "@/lib/constants"
 import { useAuthStore } from "@/store/auth-store"
+import { ThemeToggle } from "@/components/theme/ThemeToggle"
 
 interface NavItem {
   href: string
@@ -114,8 +115,12 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      <div className="px-3 py-4 border-t border-white/10">
-        <div className="px-3 py-2 mb-1">
+      <div className="px-3 py-4 border-t border-white/10 flex flex-col gap-3">
+        <div className="px-1">
+          <p className="text-white/40 text-[10px] uppercase tracking-wider mb-1.5 font-semibold">Theme</p>
+          <ThemeToggle variant="compact" />
+        </div>
+        <div className="px-3 py-2 pt-2 border-t border-white/5">
           <p className="text-white text-sm font-medium leading-none">{user.name}</p>
           <p className="text-white/40 text-xs mt-1">{user.email}</p>
         </div>
