@@ -44,7 +44,7 @@ const TicketQueueContent = () => {
 
   const handleAssign = (id: string) => {
     if (!user) return
-    assignTicket(id, user.name)
+    assignTicket(id, user.name, user)
   }
 
   return (

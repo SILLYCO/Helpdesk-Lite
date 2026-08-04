@@ -42,6 +42,7 @@ export default function SubmitTicketPage() {
       category: data.category,
       priority: data.priority,
       submittedBy: user.name,
+      userRole: user.role,
     })
 
     setNewTicketId(ticket.id)
