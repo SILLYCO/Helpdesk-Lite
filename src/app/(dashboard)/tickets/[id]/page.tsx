@@ -122,14 +122,14 @@ export default function TicketDetailPage() {
         <span className="font-mono text-xs">{ticket.id}</span>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-7 py-6 mb-5">
+      <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 mb-5 transition-colors">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <StatusBadge status={ticket.status} />
               <PriorityLabel priority={ticket.priority} />
             </div>
-            <h2 className="text-lg font-semibold text-[#0A1F44] leading-snug">
+            <h2 className="text-lg font-semibold text-[#0A1F44] dark:text-slate-100 leading-snug">
               {ticket.title}
             </h2>
           </div>
@@ -140,7 +140,7 @@ export default function TicketDetailPage() {
                 <button
                   type="button"
                   onClick={handleAssignToMe}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0891B2]/10 hover:bg-[#0891B2]/20 text-[#0891B2] text-sm font-semibold transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#0891B2]/10 dark:bg-[#0891B2]/20 hover:bg-[#0891B2]/20 dark:hover:bg-[#0891B2]/30 text-[#0891B2] dark:text-[#38BDF8] text-sm font-semibold transition-colors"
                 >
                   <UserCheck size={14} aria-hidden="true" />
                   Assign to me
@@ -151,7 +151,7 @@ export default function TicketDetailPage() {
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as TicketStatus)}
                   aria-label="Update ticket status"
-                  className="appearance-none pl-3 pr-8 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all"
+                  className="appearance-none pl-3 pr-8 py-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>
@@ -161,7 +161,7 @@ export default function TicketDetailPage() {
                 </select>
                 <ChevronDown
                   size={13}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none"
                   aria-hidden="true"
                 />
               </div>
@@ -169,7 +169,7 @@ export default function TicketDetailPage() {
                 type="button"
                 onClick={handleSaveStatus}
                 disabled={newStatus === ticket.status}
-                className="px-4 py-2 bg-[#0A1F44] hover:bg-[#112952] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[#0A1F44] dark:bg-[#0891B2] hover:bg-[#112952] dark:hover:bg-[#0780A0] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Update
               </button>
@@ -177,7 +177,7 @@ export default function TicketDetailPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-4 gap-4 mt-5 pt-5 border-t border-slate-100">
+        <div className="grid grid-cols-4 gap-4 mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
           {[
             { label: "Ticket ID", value: ticket.id, icon: Tag, mono: true },
             { label: "Submitted by", value: ticket.submittedBy, icon: User, mono: false },
@@ -195,12 +195,12 @@ export default function TicketDetailPage() {
             },
           ].map(({ label, value, icon: Icon, mono }) => (
             <div key={label}>
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1 flex items-center gap-1">
                 <Icon size={11} aria-hidden="true" />
                 {label}
               </p>
               <p
-                className={`text-sm font-medium text-[#0A1F44] ${mono ? "font-mono text-xs" : ""}`}
+                className={`text-sm font-medium text-[#0A1F44] dark:text-slate-200 ${mono ? "font-mono text-xs" : ""}`}
               >
                 {value}
               </p>
@@ -211,31 +211,31 @@ export default function TicketDetailPage() {
 
       <div className="grid grid-cols-[1fr_320px] gap-5 items-start">
         <div className="flex flex-col gap-4">
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-7 py-6">
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+          <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 transition-colors">
+            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
               Description
             </h3>
-            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
               {ticket.description}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-7 py-6">
+          <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 transition-colors">
             {/* Tabs for Activity vs Audit Log */}
-            <div className="flex items-center gap-6 border-b border-slate-100 pb-3 mb-4">
+            <div className="flex items-center gap-6 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
               <button
                 type="button"
                 onClick={() => setActiveTab("discussion")}
                 className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
                   activeTab === "discussion"
-                    ? "text-[#0891B2]"
-                    : "text-slate-400 hover:text-slate-600"
+                    ? "text-[#0891B2] dark:text-[#38BDF8]"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 }`}
               >
                 <MessageSquare size={13} aria-hidden="true" />
                 Discussion ({ticket.comments.length})
                 {activeTab === "discussion" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
                 )}
               </button>
 
@@ -244,14 +244,14 @@ export default function TicketDetailPage() {
                 onClick={() => setActiveTab("audit")}
                 className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
                   activeTab === "audit"
-                    ? "text-[#0891B2]"
-                    : "text-slate-400 hover:text-slate-600"
+                    ? "text-[#0891B2] dark:text-[#38BDF8]"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 }`}
               >
                 <History size={13} aria-hidden="true" />
                 Audit Log ({ticket.history?.length || 0})
                 {activeTab === "audit" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
                 )}
               </button>
             </div>
@@ -262,37 +262,37 @@ export default function TicketDetailPage() {
                   <div className="flex flex-col gap-5 mb-5">
                     {ticket.comments.map((c) => (
                       <div key={c.id} className="flex gap-3">
-                        <div className="w-7 h-7 bg-[#0A1F44]/10 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                          <User size={13} className="text-[#0A1F44]" aria-hidden="true" />
+                        <div className="w-7 h-7 bg-[#0A1F44]/10 dark:bg-slate-700/60 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                          <User size={13} className="text-[#0A1F44] dark:text-slate-200" aria-hidden="true" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-baseline gap-2 mb-1">
-                            <span className="text-sm font-semibold text-[#0A1F44]">
+                            <span className="text-sm font-semibold text-[#0A1F44] dark:text-slate-100">
                               {c.author}
                             </span>
-                            <span className="text-xs text-slate-400">{c.role}</span>
-                            <span className="text-xs text-slate-400 ml-auto">
+                            <span className="text-xs text-slate-400 dark:text-slate-500">{c.role}</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">
                               {c.timestamp}
                             </span>
                           </div>
-                          <p className="text-sm text-slate-700 leading-relaxed">{c.body}</p>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{c.body}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 mb-5 italic">No comments yet.</p>
+                  <p className="text-sm text-slate-400 dark:text-slate-500 mb-5 italic">No comments yet.</p>
                 )}
 
                 <form
                   onSubmit={handleSubmit(handleAddComment)}
-                  className="flex flex-col gap-2.5 pt-4 border-t border-slate-100"
+                  className="flex flex-col gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800"
                 >
                   <textarea
                     rows={3}
                     placeholder="Add an update or response…"
                     aria-label="Comment body"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-[#0A1F44] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
                     {...register("body")}
                   />
                   <div className="flex justify-end">
@@ -313,8 +313,8 @@ export default function TicketDetailPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-5">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-4">
+        <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-5 py-5 transition-colors">
+          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
             Details
           </h3>
           <div className="flex flex-col gap-3.5">
@@ -324,14 +324,14 @@ export default function TicketDetailPage() {
             ].map(({ label, value }) => (
               <div
                 key={label}
-                className="flex justify-between items-center py-2.5 border-b border-slate-100 last:border-0"
+                className="flex justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800/80 last:border-0"
               >
-                <span className="text-xs text-slate-500 font-medium">{label}</span>
-                <span className="text-xs font-semibold text-[#0A1F44]">{value}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</span>
+                <span className="text-xs font-semibold text-[#0A1F44] dark:text-slate-200">{value}</span>
               </div>
             ))}
             <div className="flex justify-between items-center py-2.5">
-              <span className="text-xs text-slate-500 font-medium">Status</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Status</span>
               <StatusBadge status={ticket.status} />
             </div>
           </div>

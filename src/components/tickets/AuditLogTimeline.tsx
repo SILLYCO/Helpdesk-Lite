@@ -83,21 +83,21 @@ export function AuditLogTimeline({ history = [] }: AuditLogTimelineProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Header and Filter */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2">
           <History size={16} className="text-[#0891B2]" aria-hidden="true" />
-          <h3 className="text-sm font-semibold text-[#0A1F44]">
+          <h3 className="text-sm font-semibold text-[#0A1F44] dark:text-slate-100">
             Audit Trail ({filteredHistory.length})
           </h3>
         </div>
 
         <div className="flex items-center gap-1.5 text-xs">
-          <Filter size={13} className="text-slate-400" aria-hidden="true" />
+          <Filter size={13} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
           <select
             value={filterAction}
             onChange={(e) => setFilterAction(e.target.value)}
             aria-label="Filter audit log action type"
-            className="px-2 py-1 rounded-md border border-slate-200 bg-slate-50 text-xs text-[#0A1F44] focus:outline-none focus:ring-1 focus:ring-[#0891B2]"
+            className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-xs text-[#0A1F44] dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#0891B2]"
           >
             <option value="all">All Events</option>
             <option value="status_change">Status Updates</option>
@@ -109,7 +109,7 @@ export function AuditLogTimeline({ history = [] }: AuditLogTimelineProps) {
       </div>
 
       {/* Timeline view */}
-      <div className="relative pl-4 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+      <div className="relative pl-4 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
         {filteredHistory.map((item) => {
           const config = ACTION_CONFIG[item.action] || ACTION_CONFIG.status_change
           const IconComponent = config.icon
@@ -118,19 +118,19 @@ export function AuditLogTimeline({ history = [] }: AuditLogTimelineProps) {
             <div key={item.id} className="relative flex gap-3.5 group">
               {/* Node Icon */}
               <div
-                className={`absolute -left-4 top-0.5 w-5 h-5 rounded-full border flex items-center justify-center bg-white z-10 shadow-xs ${config.bgColor}`}
+                className={`absolute -left-4 top-0.5 w-5 h-5 rounded-full border flex items-center justify-center bg-white dark:bg-slate-900 z-10 shadow-xs ${config.bgColor}`}
               >
                 <IconComponent size={11} aria-hidden="true" />
               </div>
 
               {/* Content Card */}
-              <div className="flex-1 bg-slate-50/70 border border-slate-100 rounded-lg p-3 text-xs text-slate-700 transition-colors group-hover:border-slate-200">
+              <div className="flex-1 bg-slate-50/70 dark:bg-[#0F1930]/80 border border-slate-100 dark:border-slate-800 rounded-lg p-3 text-xs text-slate-700 dark:text-slate-300 transition-colors group-hover:border-slate-200 dark:group-hover:border-slate-700">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-[#0A1F44]">
+                    <span className="font-semibold text-[#0A1F44] dark:text-slate-100">
                       {item.performedBy}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-200/80 text-slate-600">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                       {item.role}
                     </span>
                     <span
@@ -140,27 +140,27 @@ export function AuditLogTimeline({ history = [] }: AuditLogTimelineProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400 shrink-0">
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 shrink-0">
                     <Clock size={11} aria-hidden="true" />
                     <span>{item.timestamp}</span>
                   </div>
                 </div>
 
-                <p className="text-slate-600 font-medium mb-1">{item.description}</p>
+                <p className="text-slate-600 dark:text-slate-300 font-medium mb-1">{item.description}</p>
 
                 {/* Diff callout if values changed */}
                 {item.changes && (
-                  <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center gap-2 text-[11px]">
-                    <span className="text-slate-400 uppercase font-semibold tracking-wider text-[9px]">
+                  <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center gap-2 text-[11px]">
+                    <span className="text-slate-400 dark:text-slate-500 uppercase font-semibold tracking-wider text-[9px]">
                       {item.changes.field}:
                     </span>
                     {item.changes.oldValue && (
-                      <span className="px-1.5 py-0.5 rounded bg-red-50 text-red-600 line-through font-mono">
+                      <span className="px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 line-through font-mono">
                         {item.changes.oldValue}
                       </span>
                     )}
-                    <span className="text-slate-400">→</span>
-                    <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold font-mono">
+                    <span className="text-slate-400 dark:text-slate-500">→</span>
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold font-mono">
                       {item.changes.newValue}
                     </span>
                   </div>

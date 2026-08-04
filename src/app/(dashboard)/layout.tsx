@@ -10,7 +10,7 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-[#F1F4F8]">
+      <div className="flex min-h-screen bg-[#F1F4F8] dark:bg-[#0B132B] text-[#0A1F44] dark:text-slate-100 transition-colors">
         <Sidebar />
         <main className="flex-1 px-8 py-8 overflow-auto min-h-screen">
           {children}

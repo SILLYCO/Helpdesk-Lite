@@ -63,29 +63,29 @@ const TicketQueueContent = () => {
         resultCount={filtered.length}
       />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-colors">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50">
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-24">
+            <tr className="border-b border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-[#0F1930]">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-24">
                 ID
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Title
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-32">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-32">
                 Submitted by
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-28">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-28">
                 Priority
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-32">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-32">
                 Status
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-36">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-36">
                 Assigned to
               </th>
-              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide w-24">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-24">
                 Date
               </th>
               <th className="w-28" aria-hidden="true" />
@@ -94,7 +94,7 @@ const TicketQueueContent = () => {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center py-12 text-slate-400 text-sm">
+                <td colSpan={8} className="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">
                   No tickets found.
                 </td>
               </tr>
@@ -102,15 +102,15 @@ const TicketQueueContent = () => {
               filtered.map((ticket, i) => (
                 <tr
                   key={ticket.id}
-                  className={`group hover:bg-slate-50/80 transition-colors ${
-                    i < filtered.length - 1 ? "border-b border-slate-100" : ""
+                  className={`group hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors ${
+                    i < filtered.length - 1 ? "border-b border-slate-100 dark:border-slate-800/60" : ""
                   }`}
                 >
                   <td className="px-5 py-3.5">
                     <button
                       type="button"
                       onClick={() => router.push(`/tickets/${ticket.id}`)}
-                      className="font-mono text-xs text-[#0891B2] hover:underline"
+                      className="font-mono text-xs text-[#0891B2] dark:text-[#38BDF8] hover:underline"
                     >
                       {ticket.id}
                     </button>
@@ -119,17 +119,17 @@ const TicketQueueContent = () => {
                     <button
                       type="button"
                       onClick={() => router.push(`/tickets/${ticket.id}`)}
-                      className="font-medium text-[#0A1F44] hover:text-[#0891B2] text-left transition-colors"
+                      className="font-medium text-[#0A1F44] dark:text-slate-100 hover:text-[#0891B2] dark:hover:text-[#38BDF8] text-left transition-colors"
                     >
                       {ticket.title}
                     </button>
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center shrink-0">
-                        <User size={10} className="text-slate-500" aria-hidden="true" />
+                      <div className="w-5 h-5 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center shrink-0">
+                        <User size={10} className="text-slate-500 dark:text-slate-300" aria-hidden="true" />
                       </div>
-                      <span className="text-xs text-slate-600">{ticket.submittedBy}</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300">{ticket.submittedBy}</span>
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
@@ -140,12 +140,12 @@ const TicketQueueContent = () => {
                   </td>
                   <td className="px-5 py-3.5">
                     {ticket.assignedTo ? (
-                      <span className="text-xs text-slate-600">{ticket.assignedTo}</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300">{ticket.assignedTo}</span>
                     ) : (
-                      <span className="text-xs text-slate-400 italic">Unassigned</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 italic">Unassigned</span>
                     )}
                   </td>
-                  <td className="px-5 py-3.5 text-xs text-slate-500">
+                  <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">
                     {formatDate(ticket.submittedDate)}
                   </td>
                   <td className="px-3 py-3.5">
@@ -153,7 +153,7 @@ const TicketQueueContent = () => {
                       <button
                         type="button"
                         onClick={() => handleAssign(ticket.id)}
-                        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#0891B2]/10 hover:bg-[#0891B2]/20 text-[#0891B2] text-xs font-semibold transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#0891B2]/10 dark:bg-[#0891B2]/20 hover:bg-[#0891B2]/20 dark:hover:bg-[#0891B2]/30 text-[#0891B2] dark:text-[#38BDF8] text-xs font-semibold transition-colors"
                         aria-label={`Assign ticket ${ticket.id} to me`}
                       >
                         <UserCheck size={12} aria-hidden="true" />
