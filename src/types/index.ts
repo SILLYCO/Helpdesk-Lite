@@ -10,6 +10,10 @@ export type AuditActionType =
   | "assigned"
   | "comment_added"
   | "priority_change"
+  | "edited"
+  | "csat_rated"
+  | "sla_breached"
+  | "bulk_updated"
 
 export interface AuditFieldChange {
   field: string
@@ -32,6 +36,15 @@ export interface User {
   name: string
   email: string
   role: Role
+  department?: string
+}
+
+export interface Attachment {
+  id: string
+  name: string
+  size: number
+  type: string
+  url: string
 }
 
 export interface TicketComment {
@@ -40,6 +53,8 @@ export interface TicketComment {
   role: string
   body: string
   timestamp: string
+  isInternal?: boolean
+  attachments?: Attachment[]
 }
 
 export interface TicketItem {
@@ -47,6 +62,7 @@ export interface TicketItem {
   title: string
   description: string
   category: string
+  department?: string
   priority: Priority
   status: TicketStatus
   submittedBy: string
@@ -54,5 +70,42 @@ export interface TicketItem {
   assignedTo: string | null
   comments: TicketComment[]
   history: AuditLogEntry[]
+  attachments?: Attachment[]
+  slaDueDate?: string
+  csatRating?: number
+  csatFeedback?: string
+  relatedTicketIds?: string[]
 }
+
+export interface KnowledgeArticle {
+  id: string
+  title: string
+  category: string
+  summary: string
+  content: string
+  tags: string[]
+  helpfulCount: number
+  unhelpfulCount: number
+  views: number
+  updatedAt: string
+}
+
+export interface NotificationItem {
+  id: string
+  userId: string
+  title: string
+  message: string
+  ticketId?: string
+  read: boolean
+  timestamp: string
+  type: "status" | "comment" | "assignment" | "sla"
+}
+
+export interface CannedResponse {
+  id: string
+  title: string
+  category: string
+  body: string
+}
+
 
