@@ -1,27 +1,36 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Calendar,
   ChevronDown,
+  Edit3,
+  FileText,
   History,
+  Lock,
   MessageSquare,
+  Paperclip,
   Send,
   Tag,
   User,
   UserCheck,
 } from "lucide-react"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
 import { AuditLogTimeline } from "@/components/tickets/AuditLogTimeline"
+import { CannedResponsesSelect } from "@/components/tickets/CannedResponsesSelect"
+import { CsatSurvey } from "@/components/tickets/CsatSurvey"
+import { EditTicketModal } from "@/components/tickets/EditTicketModal"
 import { PriorityLabel } from "@/components/tickets/PriorityLabel"
+import { SlaBadge } from "@/components/tickets/SlaBadge"
 import { StatusBadge } from "@/components/tickets/StatusBadge"
 import { STATUS_OPTIONS } from "@/lib/constants"
 import { formatDate } from "@/lib/utils"
 import { commentSchema, type CommentFormValues } from "@/lib/validations"
 import { useAuthStore } from "@/store/auth-store"
+import { useNotificationStore } from "@/store/notification-store"
 import { useTicketStore } from "@/store/ticket-store"
 import type { TicketStatus } from "@/types"
 
@@ -34,15 +43,23 @@ export default function TicketDetailPage() {
   const updateStatus = useTicketStore((s) => s.updateStatus)
   const assignTicket = useTicketStore((s) => s.assignTicket)
   const addComment = useTicketStore((s) => s.addComment)
+  const editTicket = useTicketStore((s) => s.editTicket)
+  const addCsatRating = useTicketStore((s) => s.addCsatRating)
+  const linkRelatedTicket = useTicketStore((s) => s.linkRelatedTicket)
+  const addNotification = useNotificationStore((s) => s.addNotification)
 
   const ticket = tickets.find((t) => t.id === ticketId)
   const [newStatus, setNewStatus] = useState<TicketStatus | null>(null)
   const [activeTab, setActiveTab] = useState<"discussion" | "audit">("discussion")
+  const [isInternalNote, setIsInternalNote] = useState<boolean>(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
+  const [relatedInput, setRelatedInput] = useState<string>("")
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { isSubmitting },
   } = useForm<CommentFormValues>({
@@ -77,9 +94,10 @@ export default function TicketDetailPage() {
   }
 
   const isEmployee = user.role === "employee"
+  const isStaffOrManager = user.role === "staff" || user.role === "manager"
   const isOwner = ticket.submittedBy === user.name
   const canView = !isEmployee || isOwner
-  const canUpdateStatus = user.role === "staff" || user.role === "manager"
+  const canUpdateStatus = isStaffOrManager
 
   if (!canView) {
     router.replace("/tickets")
@@ -89,17 +107,51 @@ export default function TicketDetailPage() {
   const handleSaveStatus = () => {
     if (newStatus !== ticket.status) {
       updateStatus(ticket.id, newStatus, user)
+      addNotification({
+        userId: ticket.submittedBy,
+        title: `Ticket Status Updated`,
+        message: `Ticket ${ticket.id} status was changed to ${newStatus} by ${user.name}`,
+        ticketId: ticket.id,
+        type: "status",
+      })
     }
   }
 
   const handleAssignToMe = () => {
     assignTicket(ticket.id, user.name, user)
     setNewStatus("In Progress")
+    addNotification({
+      userId: ticket.submittedBy,
+      title: `Agent Assigned`,
+      message: `Ticket ${ticket.id} was assigned to ${user.name}`,
+      ticketId: ticket.id,
+      type: "assignment",
+    })
   }
 
   const handleAddComment = (data: CommentFormValues) => {
-    addComment(ticket.id, data.body, user)
+    addComment(ticket.id, data.body, user, isInternalNote)
+    if (!isInternalNote && user.name !== ticket.submittedBy) {
+      addNotification({
+        userId: ticket.submittedBy,
+        title: `New Comment on Ticket`,
+        message: `${user.name} commented on ticket ${ticket.id}`,
+        ticketId: ticket.id,
+        type: "comment",
+      })
+    }
     reset()
+  }
+
+  const handleEditSave = (updates: any) => {
+    editTicket(ticket.id, updates, user)
+  }
+
+  const handleLinkTicketSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!relatedInput.trim()) return
+    linkRelatedTicket(ticket.id, relatedInput.trim().toUpperCase(), user)
+    setRelatedInput("")
   }
 
   const backHref =
@@ -109,25 +161,50 @@ export default function TicketDetailPage() {
         ? "/queue"
         : "/tickets"
 
+  const visibleComments = isStaffOrManager
+    ? ticket.comments
+    : ticket.comments.filter((c) => !c.isInternal)
+
   return (
     <div>
-      <div className="flex items-center gap-2 mb-6 text-sm text-slate-500">
-        <Link
-          href={backHref}
-          className="hover:text-[#0891B2] transition-colors font-medium"
+      <EditTicketModal
+        ticket={ticket}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleEditSave}
+      />
+
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <Link
+            href={backHref}
+            className="hover:text-[#0891B2] transition-colors font-medium"
+          >
+            ← Back
+          </Link>
+          <span aria-hidden="true">/</span>
+          <span className="font-mono text-xs">{ticket.id}</span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsEditModalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#14213D] hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-[#0A1F44] dark:text-slate-200 transition-colors"
         >
-          ← Back
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span className="font-mono text-xs">{ticket.id}</span>
+          <Edit3 size={13} className="text-[#0891B2]" /> Edit Ticket
+        </button>
       </div>
 
       <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 mb-5 transition-colors">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
               <StatusBadge status={ticket.status} />
               <PriorityLabel priority={ticket.priority} />
+              <SlaBadge priority={ticket.priority} status={ticket.status} slaDueDate={ticket.slaDueDate} />
+              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                Dept: {ticket.department || "IT Support"}
+              </span>
             </div>
             <h2 className="text-lg font-semibold text-[#0A1F44] dark:text-slate-100 leading-snug">
               {ticket.title}
@@ -209,6 +286,16 @@ export default function TicketDetailPage() {
         </div>
       </div>
 
+      {isEmployee && ticket.status === "Resolved" && (
+        <div className="mb-5">
+          <CsatSurvey
+            initialRating={ticket.csatRating}
+            initialFeedback={ticket.csatFeedback}
+            onSubmitRating={(rating, feedback) => addCsatRating(ticket.id, rating, feedback)}
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-[1fr_320px] gap-5 items-start">
         <div className="flex flex-col gap-4">
           <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 transition-colors">
@@ -218,50 +305,83 @@ export default function TicketDetailPage() {
             <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
               {ticket.description}
             </p>
+
+            {ticket.attachments && ticket.attachments.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <p className="text-xs font-semibold text-slate-400 uppercase mb-2 flex items-center gap-1">
+                  <Paperclip size={12} /> Attachments ({ticket.attachments.length})
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {ticket.attachments.map((att) => (
+                    <a
+                      key={att.id}
+                      href={att.url}
+                      download={att.name}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-[#0F1930] border border-slate-200 dark:border-slate-800 text-xs text-[#0891B2] dark:text-[#38BDF8] hover:underline"
+                    >
+                      <FileText size={13} />
+                      <span className="font-medium">{att.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-7 py-6 transition-colors">
-            {/* Tabs for Activity vs Audit Log */}
-            <div className="flex items-center gap-6 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
-              <button
-                type="button"
-                onClick={() => setActiveTab("discussion")}
-                className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
-                  activeTab === "discussion"
-                    ? "text-[#0891B2] dark:text-[#38BDF8]"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                }`}
-              >
-                <MessageSquare size={13} aria-hidden="true" />
-                Discussion ({ticket.comments.length})
-                {activeTab === "discussion" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
-                )}
-              </button>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-6">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("discussion")}
+                  className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
+                    activeTab === "discussion"
+                      ? "text-[#0891B2] dark:text-[#38BDF8]"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  }`}
+                >
+                  <MessageSquare size={13} aria-hidden="true" />
+                  Discussion ({visibleComments.length})
+                  {activeTab === "discussion" && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
+                  )}
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab("audit")}
-                className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
-                  activeTab === "audit"
-                    ? "text-[#0891B2] dark:text-[#38BDF8]"
-                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                }`}
-              >
-                <History size={13} aria-hidden="true" />
-                Audit Log ({ticket.history?.length || 0})
-                {activeTab === "audit" && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
-                )}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("audit")}
+                  className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide pb-1.5 transition-colors relative ${
+                    activeTab === "audit"
+                      ? "text-[#0891B2] dark:text-[#38BDF8]"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  }`}
+                >
+                  <History size={13} aria-hidden="true" />
+                  Audit Log ({ticket.history?.length || 0})
+                  {activeTab === "audit" && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0891B2] dark:bg-[#38BDF8] rounded-full" />
+                  )}
+                </button>
+              </div>
+
+              {isStaffOrManager && activeTab === "discussion" && (
+                <CannedResponsesSelect onSelect={(text) => setValue("body", text)} />
+              )}
             </div>
 
             {activeTab === "discussion" ? (
               <>
-                {ticket.comments.length > 0 ? (
+                {visibleComments.length > 0 ? (
                   <div className="flex flex-col gap-5 mb-5">
-                    {ticket.comments.map((c) => (
-                      <div key={c.id} className="flex gap-3">
+                    {visibleComments.map((c) => (
+                      <div
+                        key={c.id}
+                        className={`flex gap-3 p-3 rounded-xl transition-colors ${
+                          c.isInternal
+                            ? "bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60"
+                            : ""
+                        }`}
+                      >
                         <div className="w-7 h-7 bg-[#0A1F44]/10 dark:bg-slate-700/60 rounded-full flex items-center justify-center shrink-0 mt-0.5">
                           <User size={13} className="text-[#0A1F44] dark:text-slate-200" aria-hidden="true" />
                         </div>
@@ -271,6 +391,11 @@ export default function TicketDetailPage() {
                               {c.author}
                             </span>
                             <span className="text-xs text-slate-400 dark:text-slate-500">{c.role}</span>
+                            {c.isInternal && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-200 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                                <Lock size={9} /> Internal Staff Note
+                              </span>
+                            )}
                             <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">
                               {c.timestamp}
                             </span>
@@ -288,21 +413,60 @@ export default function TicketDetailPage() {
                   onSubmit={handleSubmit(handleAddComment)}
                   className="flex flex-col gap-2.5 pt-4 border-t border-slate-100 dark:border-slate-800"
                 >
+                  {isStaffOrManager && (
+                    <div className="flex items-center gap-4 text-xs mb-1">
+                      <label className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="noteType"
+                          checked={!isInternalNote}
+                          onChange={() => setIsInternalNote(false)}
+                          className="text-[#0891B2]"
+                        />
+                        <span className="font-medium text-slate-700 dark:text-slate-300">Public Reply</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer text-amber-700 dark:text-amber-400">
+                        <input
+                          type="radio"
+                          name="noteType"
+                          checked={isInternalNote}
+                          onChange={() => setIsInternalNote(true)}
+                          className="text-amber-600"
+                        />
+                        <span className="font-semibold flex items-center gap-1">
+                          <Lock size={11} /> Internal Staff Note (Staff Only)
+                        </span>
+                      </label>
+                    </div>
+                  )}
+
                   <textarea
                     rows={3}
-                    placeholder="Add an update or response…"
+                    placeholder={
+                      isInternalNote
+                        ? "Write an internal note for staff members only…"
+                        : "Add an update or response…"
+                    }
                     aria-label="Comment body"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-sm text-[#0A1F44] dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0891B2]/30 focus:border-[#0891B2] transition-all resize-none"
+                    className={`w-full px-3.5 py-2.5 rounded-lg border text-sm text-[#0A1F44] dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 transition-all resize-none ${
+                      isInternalNote
+                        ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-800 focus:ring-amber-500"
+                        : "bg-slate-50 dark:bg-[#0F1930] border-slate-200 dark:border-slate-800 focus:ring-[#0891B2]/30 focus:border-[#0891B2]"
+                    }`}
                     {...register("body")}
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={!commentBody?.trim() || isSubmitting}
-                      className="flex items-center gap-1.5 px-4 py-2 bg-[#0891B2] hover:bg-[#0780A0] text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      className={`flex items-center gap-1.5 px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                        isInternalNote
+                          ? "bg-amber-600 hover:bg-amber-700"
+                          : "bg-[#0891B2] hover:bg-[#0780A0]"
+                      }`}
                     >
                       <Send size={13} aria-hidden="true" />
-                      Post Update
+                      {isInternalNote ? "Post Internal Note" : "Post Update"}
                     </button>
                   </div>
                 </form>
@@ -313,31 +477,71 @@ export default function TicketDetailPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-5 py-5 transition-colors">
-          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
-            Details
-          </h3>
-          <div className="flex flex-col gap-3.5">
-            {[
-              { label: "Category", value: ticket.category },
-              { label: "Priority", value: ticket.priority },
-            ].map(({ label, value }) => (
-              <div
-                key={label}
-                className="flex justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800/80 last:border-0"
-              >
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</span>
-                <span className="text-xs font-semibold text-[#0A1F44] dark:text-slate-200">{value}</span>
+        <div className="flex flex-col gap-4">
+          <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-5 py-5 transition-colors">
+            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">
+              Details
+            </h3>
+            <div className="flex flex-col gap-3.5">
+              {[
+                { label: "Category", value: ticket.category },
+                { label: "Department", value: ticket.department || "IT Support" },
+                { label: "Priority", value: ticket.priority },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-800/80 last:border-0"
+                >
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</span>
+                  <span className="text-xs font-semibold text-[#0A1F44] dark:text-slate-200">{value}</span>
+                </div>
+              ))}
+              <div className="flex justify-between items-center py-2">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Status</span>
+                <StatusBadge status={ticket.status} />
               </div>
-            ))}
-            <div className="flex justify-between items-center py-2.5">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Status</span>
-              <StatusBadge status={ticket.status} />
             </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#14213D] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm px-5 py-5 transition-colors">
+            <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+              Related Tickets
+            </h3>
+
+            {ticket.relatedTicketIds && ticket.relatedTicketIds.length > 0 ? (
+              <div className="flex flex-col gap-1.5 mb-3">
+                {ticket.relatedTicketIds.map((relId) => (
+                  <Link
+                    key={relId}
+                    href={`/tickets/${relId}`}
+                    className="text-xs font-mono text-[#0891B2] dark:text-[#38BDF8] hover:underline flex items-center gap-1"
+                  >
+                    🔗 {relId}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic mb-3">No related tickets linked.</p>
+            )}
+
+            <form onSubmit={handleLinkTicketSubmit} className="flex gap-2">
+              <input
+                type="text"
+                value={relatedInput}
+                onChange={(e) => setRelatedInput(e.target.value)}
+                placeholder="Link TKT-#…"
+                className="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0F1930] text-xs font-mono text-[#0A1F44] dark:text-slate-100 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-semibold text-slate-700 dark:text-slate-200 rounded-lg transition-colors"
+              >
+                Link
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
   )
 }
-

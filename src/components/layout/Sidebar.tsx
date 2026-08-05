@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
+  BookOpen,
   InboxIcon,
   LayoutDashboard,
   LogOut,
@@ -33,6 +34,12 @@ const NAV_ITEMS: NavItem[] = [
     href: "/tickets/new",
     label: "Submit Ticket",
     icon: PlusCircle,
+    roles: ["employee", "staff", "manager"],
+  },
+  {
+    href: "/kb",
+    label: "Knowledge Base",
+    icon: BookOpen,
     roles: ["employee", "staff", "manager"],
   },
   {

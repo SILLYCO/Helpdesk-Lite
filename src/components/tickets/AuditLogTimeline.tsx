@@ -56,6 +56,30 @@ const ACTION_CONFIG: Record<
     textColor: "text-amber-700",
     label: "Priority Update",
   },
+  edited: {
+    icon: RefreshCw,
+    bgColor: "bg-indigo-50 text-indigo-600 border-indigo-200",
+    textColor: "text-indigo-700",
+    label: "Ticket Edited",
+  },
+  csat_rated: {
+    icon: CheckCircle2,
+    bgColor: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    textColor: "text-emerald-700",
+    label: "CSAT Feedback",
+  },
+  sla_breached: {
+    icon: Clock,
+    bgColor: "bg-red-50 text-red-600 border-red-200",
+    textColor: "text-red-700",
+    label: "SLA Breached",
+  },
+  bulk_updated: {
+    icon: RefreshCw,
+    bgColor: "bg-purple-50 text-purple-600 border-purple-200",
+    textColor: "text-purple-700",
+    label: "Bulk Action",
+  },
 }
 
 export function AuditLogTimeline({ history = [] }: AuditLogTimelineProps) {
